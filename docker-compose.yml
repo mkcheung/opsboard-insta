@@ -1,0 +1,40 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: opsboard-postgres
+    environment:
+      POSTGRES_DB: opsboard
+      POSTGRES_USER: opsboard
+      POSTGRES_PASSWORD: opsboard_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - opsboard_pgdata:/var/lib/postgresql/data
+    networks:
+      - opsboard_net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U opsboard -d opsboard"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  pgadmin:
+    image: dpage/pgadmin4:8
+    container_name: opsboard-pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@example.com
+      PGADMIN_DEFAULT_PASSWORD: admin_password
+    ports:
+      - "5050:80"
+    depends_on:
+      - postgres
+    networks:
+      - opsboard_net
+
+volumes:
+  opsboard_pgdata:
+
+networks:
+  opsboard_net:
+    name: opsboard_net
+    driver: bridge
