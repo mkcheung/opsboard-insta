@@ -47,8 +47,11 @@ services:
       - opsboard_net
     command: >
       sh -c "composer install &&
-             php artisan key:generate --force &&
-             php artisan serve --host=0.0.0.0 --port=8000"
+         cp -n .env.example .env || true &&
+         php artisan key:generate --force &&
+         php artisan key:generate --env=testing --force &&
+         php artisan config:clear &&
+         php artisan serve --host=0.0.0.0 --port=8000"
     restart: unless-stopped
 
   django:
