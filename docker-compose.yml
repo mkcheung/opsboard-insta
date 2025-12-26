@@ -84,6 +84,29 @@ services:
              python manage.py runserver 0.0.0.0:8000"
     restart: unless-stopped
 
+  web:
+    build:
+      context: ../opsboard-web
+      dockerfile: Dockerfile
+    container_name: opsboard-web
+    working_dir: /app
+    volumes:
+      - ../opsboard-web:/app
+      - /app/node_modules
+    ports:
+      - "5173:5173"
+    networks:
+      - opsboard_net
+    depends_on:
+      - laravel
+      - django
+    environment:
+      # Vite exposes only vars prefixed with VITE_
+      VITE_LARAVEL_API_BASE: "http://localhost:8010"
+      VITE_DJANGO_API_BASE: "http://localhost:8001"
+      VITE_ACTIVE_BACKEND: "laravel"
+    restart: unless-stopped
+
 volumes:
   opsboard_pgdata:
   opsboard_pgadmin_data:
